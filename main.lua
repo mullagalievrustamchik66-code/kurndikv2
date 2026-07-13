@@ -14,7 +14,14 @@ local Tweens = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
 
 -- Таблицы состояний функций
-local States = { Aimbot = false, AimAssist = false, Hitbox = false, Autogun = false, Tracers = false, NoSpread = false, Wallbang = false, Noclip = false, Fly = false, AntiFling = false, BHop = false, CoinFarm = false }
+local States = {
+    Aimbot = false, AimAssist = false, Hitbox = false, Autogun = false,
+    Tracers = false, NoSpread = false, Wallbang = false,
+    Noclip = false, Fly = false, AntiFling = false, BHop = false,
+    CoinFarm = false,
+    FlingTarget = false,
+    FlingAll = false
+}
 local Hitbox_Size = 5
 local FOV_Radius = 100
 local TargetSpeed = 16
@@ -54,93 +61,166 @@ local function SafeParent()
 end
 SafeParent()
 
-local MF = Instance.new("Frame") MF.Name = "MainFrame" MF.Size = UDim2.new(0, 720, 0, 450) 
-MF.Position = UDim2.new(0.5, -360, 0.5, -225) MF.BackgroundColor3 = MenuBGColor 
+-- Увеличенный GUI
+local MF = Instance.new("Frame") MF.Name = "MainFrame"
+MF.Size = UDim2.new(0, 850, 0, 550)
+MF.Position = UDim2.new(0.5, -425, 0.5, -275)
+MF.BackgroundColor3 = MenuBGColor
 MF.Active = true; MF.Draggable = true; MF.Parent = UI
 Instance.new("UICorner", MF).CornerRadius = UDim.new(0, 10)
 
-local SB = Instance.new("Frame") SB.Size = UDim2.new(0, 200, 1, 0) SB.BackgroundColor3 = SidebarBGColor SB.Parent = MF
+local SB = Instance.new("Frame")
+SB.Size = UDim2.new(0, 230, 1, 0)
+SB.BackgroundColor3 = SidebarBGColor
+SB.Parent = MF
 Instance.new("UICorner", SB).CornerRadius = UDim.new(0, 10)
 
-local Div = Instance.new("Frame") Div.Size = UDim2.new(0, 3, 0, 410) Div.Position = UDim2.new(0, 205, 0, 20)
-Div.BackgroundColor3 = AccentColor Div.BorderSizePixel = 0; Div.Parent = MF
-local Glow = Instance.new("UIStroke", Div) Glow.Color = AccentColor:Lerp(Color3.new(1,1,1), 0.3) Glow.Thickness = 1.5
-local Logo = Instance.new("TextLabel") Logo.Size = UDim2.new(0, 180, 0, 40) Logo.Position = UDim2.new(0, 15, 0, 15)
-Logo.Text = "Kurindik hub" Logo.TextColor3 = Color3.fromRGB(255, 255, 255) Logo.TextSize = 22
-Logo.Font = Enum.Font.GothamBlack; Logo.TextXAlignment = "Left"; Logo.BackgroundTransparency = 1; Logo.Parent = SB
+local Div = Instance.new("Frame")
+Div.Size = UDim2.new(0, 3, 0, 480)
+Div.Position = UDim2.new(0, 235, 0, 20)
+Div.BackgroundColor3 = AccentColor
+Div.BorderSizePixel = 0; Div.Parent = MF
+local Glow = Instance.new("UIStroke", Div)
+Glow.Color = AccentColor:Lerp(Color3.new(1,1,1), 0.3)
+Glow.Thickness = 1.5
+
+local Logo = Instance.new("TextLabel")
+Logo.Size = UDim2.new(0, 200, 0, 45)
+Logo.Position = UDim2.new(0, 15, 0, 15)
+Logo.Text = "Kurindik hub"
+Logo.TextColor3 = Color3.fromRGB(255, 255, 255)
+Logo.TextSize = 26
+Logo.Font = Enum.Font.GothamBlack
+Logo.TextXAlignment = "Left"
+Logo.BackgroundTransparency = 1
+Logo.Parent = SB
 
 local CreatorLabel = Instance.new("TextLabel")
 CreatorLabel.Size = UDim2.new(1, -20, 0, 20)
 CreatorLabel.Position = UDim2.new(0, 10, 1, -40)
 CreatorLabel.Text = "Made by VintuScripts"
 CreatorLabel.TextColor3 = Color3.fromRGB(180, 150, 255)
-CreatorLabel.TextSize = 11; CreatorLabel.Font = Enum.Font.GothamBlack
-CreatorLabel.TextXAlignment = "Center"; CreatorLabel.BackgroundTransparency = 1; CreatorLabel.Parent = SB
+CreatorLabel.TextSize = 12
+CreatorLabel.Font = Enum.Font.GothamBlack
+CreatorLabel.TextXAlignment = "Center"
+CreatorLabel.BackgroundTransparency = 1
+CreatorLabel.Parent = SB
 
 local CreatorCorner = Instance.new("TextLabel")
-CreatorCorner.Size = UDim2.new(0, 140, 0, 18)
-CreatorCorner.Position = UDim2.new(1, -150, 1, -25)
+CreatorCorner.Size = UDim2.new(0, 160, 0, 20)
+CreatorCorner.Position = UDim2.new(1, -170, 1, -25)
 CreatorCorner.Text = "Made by @VintuScripts"
 CreatorCorner.TextColor3 = Color3.fromRGB(150, 120, 200)
-CreatorCorner.TextSize = 10; CreatorCorner.Font = Enum.Font.GothamBold
-CreatorCorner.TextXAlignment = "Right"; CreatorCorner.BackgroundTransparency = 1; CreatorCorner.Parent = MF
+CreatorCorner.TextSize = 11
+CreatorCorner.Font = Enum.Font.GothamBold
+CreatorCorner.TextXAlignment = "Right"
+CreatorCorner.BackgroundTransparency = 1
+CreatorCorner.Parent = MF
 
-local TC = Instance.new("Frame") TC.Name = "TabContainer" TC.Size = UDim2.new(1, -20, 0, 190) TC.Position = UDim2.new(0, 10, 0, 70)
-TC.BackgroundTransparency = 1; TC.Parent = SB
-local TL = Instance.new("UIListLayout", TC) TL.Padding = UDim.new(0, 5)
+local TC = Instance.new("Frame") TC.Name = "TabContainer"
+TC.Size = UDim2.new(1, -20, 0, 210)
+TC.Position = UDim2.new(0, 10, 0, 75)
+TC.BackgroundTransparency = 1
+TC.Parent = SB
+local TL = Instance.new("UIListLayout", TC)
+TL.Padding = UDim.new(0, 5)
 
-local CC = Instance.new("Frame") CC.Name = "ContentContainer" CC.Size = UDim2.new(0, 480, 0, 390) 
-CC.Position = UDim2.new(0, 225, 0, 20) CC.BackgroundTransparency = 1; CC.Parent = MF
+local CC = Instance.new("Frame") CC.Name = "ContentContainer"
+CC.Size = UDim2.new(0, 580, 0, 490)
+CC.Position = UDim2.new(0, 255, 0, 20)
+CC.BackgroundTransparency = 1
+CC.Parent = MF
 
-local Term = Instance.new("TextButton") Term.Name = "TerminateButton" Term.Size = UDim2.new(1, -20, 0, 34) 
-Term.Position = UDim2.new(0, 10, 1, -100) Term.BackgroundColor3 = Color3.fromRGB(45, 15, 20)
-Term.Text = "   Terminate" Term.TextColor3 = Color3.fromRGB(255, 100, 100) Term.TextSize = 13
-Term.Font = Enum.Font.GothamBlack; Term.TextXAlignment = "Left"; Term.Parent = SB
+local Term = Instance.new("TextButton") Term.Name = "TerminateButton"
+Term.Size = UDim2.new(1, -20, 0, 40)
+Term.Position = UDim2.new(0, 10, 1, -110)
+Term.BackgroundColor3 = Color3.fromRGB(45, 15, 20)
+Term.Text = "   Terminate"
+Term.TextColor3 = Color3.fromRGB(255, 100, 100)
+Term.TextSize = 15
+Term.Font = Enum.Font.GothamBlack
+Term.TextXAlignment = "Left"
+Term.Parent = SB
 Instance.new("UICorner", Term).CornerRadius = UDim.new(0, 5)
 Term.MouseButton1Click:Connect(function() UI:Destroy() end)
 
-local PB = Instance.new("Frame") PB.Size = UDim2.new(0, 180, 0, 46) PB.Position = UDim2.new(0, 10, 1, -60)
-PB.BackgroundColor3 = Color3.fromRGB(24, 15, 41) PB.Parent = SB
+local PB = Instance.new("Frame")
+PB.Size = UDim2.new(0, 200, 0, 50)
+PB.Position = UDim2.new(0, 10, 1, -65)
+PB.BackgroundColor3 = Color3.fromRGB(24, 15, 41)
+PB.Parent = SB
 Instance.new("UICorner", PB).CornerRadius = UDim.new(0, 6)
 
-local PAv = Instance.new("ImageLabel") PAv.Size = UDim2.new(0, 32, 0, 32) PAv.Position = UDim2.new(0, 8, 0, 7)
-PAv.Image = AvatarId; PAv.BackgroundTransparency = 1; PAv.Parent = PB
-Instance.new("UICorner", PAv).CornerRadius = UDim.new(0, 16)
+local PAv = Instance.new("ImageLabel")
+PAv.Size = UDim2.new(0, 34, 0, 34)
+PAv.Position = UDim2.new(0, 8, 0, 8)
+PAv.Image = AvatarId
+PAv.BackgroundTransparency = 1
+PAv.Parent = PB
+Instance.new("UICorner", PAv).CornerRadius = UDim.new(0, 17)
 
-local PN = Instance.new("TextLabel") PN.Size = UDim2.new(1, -50, 1, 0) PN.Position = UDim2.new(0, 46, 0, 0)
-PN.Text = LP.Name; PN.TextColor3 = Color3.fromRGB(255, 255, 255) PN.TextSize = 13
-PN.Font = Enum.Font.GothamBlack; PN.TextXAlignment = "Left"; PN.BackgroundTransparency = 1; PN.Parent = PB
+local PN = Instance.new("TextLabel")
+PN.Size = UDim2.new(1, -50, 1, 0)
+PN.Position = UDim2.new(0, 48, 0, 0)
+PN.Text = LP.Name
+PN.TextColor3 = Color3.fromRGB(255, 255, 255)
+PN.TextSize = 15
+PN.Font = Enum.Font.GothamBlack
+PN.TextXAlignment = "Left"
+PN.BackgroundTransparency = 1
+PN.Parent = PB
 
+-- Вкладки
 local tabs = {"Combat", "Movement", "Misc", "Visuals", "Settings"}
 local Pages = {}
 
 for i, name in ipairs(tabs) do
-    local Page = Instance.new("ScrollingFrame") Page.Name = name.."Page" Page.Size = UDim2.new(1, 0, 1, 0)
-    Page.BackgroundTransparency = 1; Page.BorderSizePixel = 0; Page.ScrollBarThickness = 3
-    Page.ScrollBarImageColor3 = AccentColor Page.Visible = (i == 1)
-    Page.AutomaticCanvasSize = "Y"; Page.Parent = CC
+    local Page = Instance.new("ScrollingFrame") Page.Name = name.."Page"
+    Page.Size = UDim2.new(1, 0, 1, 0)
+    Page.BackgroundTransparency = 1
+    Page.BorderSizePixel = 0
+    Page.ScrollBarThickness = 4
+    Page.ScrollBarImageColor3 = AccentColor
+    Page.Visible = (i == 1)
+    Page.AutomaticCanvasSize = "Y"
+    Page.Parent = CC
     Pages[name] = Page
     table.insert(PageFrames, Page)
     Instance.new("UIListLayout", Page).Padding = UDim.new(0, 8)
 
-    local Btn = Instance.new("TextButton") Btn.Name = name.."TabButton" Btn.Size = UDim2.new(1, 0, 0, 34)
+    local Btn = Instance.new("TextButton") Btn.Name = name.."TabButton"
+    Btn.Size = UDim2.new(1, 0, 0, 38)
     Btn.BackgroundColor3 = (i == 1) and Color3.fromRGB(28, 18, 48) or Color3.fromRGB(14, 9, 26)
     Btn.BackgroundTransparency = (i == 1) and 0 or 1
     Btn.Text = "   "..name
     Btn.TextColor3 = (i == 1) and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(140, 130, 160)
-    Btn.TextSize = 13; Btn.Font = Enum.Font.GothamBlack; Btn.TextXAlignment = "Left"; Btn.Parent = TC
+    Btn.TextSize = 15
+    Btn.Font = Enum.Font.GothamBlack
+    Btn.TextXAlignment = "Left"
+    Btn.Parent = TC
     Instance.new("UICorner", Btn).CornerRadius = UDim.new(0, 5)
 
     Btn.MouseButton1Click:Connect(function()
         for _, p in pairs(CC:GetChildren()) do if p:IsA("ScrollingFrame") then p.Visible = false end end
         for _, b in pairs(TC:GetChildren()) do if b:IsA("TextButton") then b.BackgroundTransparency = 1; b.TextColor3 = Color3.fromRGB(140, 130, 160) end end
-        Page.Visible = true; Btn.BackgroundTransparency = 0; Btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        Page.Visible = true
+        Btn.BackgroundTransparency = 0
+        Btn.TextColor3 = Color3.fromRGB(255, 255, 255)
         Btn.BackgroundColor3 = Color3.fromRGB(28, 18, 48)
     end)
 end
-local Ver = Instance.new("TextLabel") Ver.Size = UDim2.new(0, 300, 0, 20) Ver.Position = UDim2.new(0, 225, 1, -25)
-Ver.Text = "Version: 1.0.0 - Develop by skebob scripts" Ver.TextColor3 = Color3.fromRGB(110, 95, 135)
-Ver.TextSize = 11; Ver.Font = Enum.Font.GothamBold; Ver.TextXAlignment = "Left"; Ver.BackgroundTransparency = 1; Parent = MF
+
+-- Изменено: убрано упоминание "skebob scripts"
+local Ver = Instance.new("TextLabel")
+Ver.Size = UDim2.new(0, 350, 0, 22)
+Ver.Position = UDim2.new(0, 255, 1, -28)
+Ver.Text = "Version: 1.0.0"
+Ver.TextColor3 = Color3.fromRGB(110, 95, 135)
+Ver.TextSize = 12
+Ver.Font = Enum.Font.GothamBold
+Ver.TextXAlignment = "Left"
+Ver.BackgroundTransparency = 1
+Ver.Parent = MF
 
 local MOpen = true
 UIS.InputBegan:Connect(function(i, p)
@@ -174,43 +254,48 @@ local function UpdateMenuBGColor(mainColor, sidebarColor)
     MF.BackgroundColor3 = mainColor; SB.BackgroundColor3 = sidebarColor
 end
 
--- Универсальное создание переключателя с кнопкой бинда и крестиком сброса
+-- Универсальное создание переключателя с кнопкой бинда и крестиком сброса (исправлено)
 local function CreateBoundToggle(text, targetPage, callback, stateKey)
-    local FE = Instance.new("Frame") FE.Size = UDim2.new(1, -10, 0, 46) FE.BackgroundColor3 = ButtonBGColor FE.Parent = targetPage
+    local FE = Instance.new("Frame")
+    FE.Size = UDim2.new(1, -10, 0, 60)
+    FE.BackgroundColor3 = ButtonBGColor
+    FE.Parent = targetPage
     Instance.new("UICorner", FE).CornerRadius = UDim.new(0, 6)
     table.insert(ButtonFrames, FE)
 
     local Label = Instance.new("TextLabel")
-    Label.Size = UDim2.new(0, 130, 1, 0)
+    Label.Size = UDim2.new(0, 160, 1, 0)
     Label.BackgroundTransparency = 1
     Label.Text = "   "..text
     Label.TextColor3 = Color3.fromRGB(255, 255, 255)
-    Label.TextSize = 13
+    Label.TextSize = 15
     Label.Font = Enum.Font.GothamBlack
     Label.TextXAlignment = "Left"
     Label.Parent = FE
 
     local BindBtn = Instance.new("TextButton")
-    BindBtn.Size = UDim2.new(0, 55, 0, 20)
-    BindBtn.Position = UDim2.new(0, 135, 0.5, -10)
+    BindBtn.Size = UDim2.new(0, 75, 0, 28)
+    BindBtn.Position = UDim2.new(0, 165, 0.5, -14)
     BindBtn.BackgroundColor3 = Color3.fromRGB(45, 25, 65)
     BindBtn.Text = Bindings[stateKey] and Bindings[stateKey].Name or "Bind"
     BindBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     BindBtn.Font = Enum.Font.GothamBold
-    BindBtn.TextSize = 10
+    BindBtn.TextSize = 14
     BindBtn.Parent = FE
     Instance.new("UICorner", BindBtn).CornerRadius = UDim.new(0, 4)
 
+    -- ИСПРАВЛЕННАЯ КНОПКА СБРОСА
     local ClearBindBtn = Instance.new("TextButton")
-    ClearBindBtn.Size = UDim2.new(0, 18, 0, 18)
-    ClearBindBtn.Position = UDim2.new(0, 193, 0.5, -9)
-    ClearBindBtn.BackgroundColor3 = Color3.fromRGB(80, 30, 30)
+    ClearBindBtn.Size = UDim2.new(0, 28, 0, 28)
+    ClearBindBtn.Position = UDim2.new(0, 250, 0.5, -14)
+    ClearBindBtn.BackgroundColor3 = Color3.fromRGB(120, 30, 30)
     ClearBindBtn.Text = "✕"
-    ClearBindBtn.TextColor3 = Color3.fromRGB(255, 200, 200)
+    ClearBindBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     ClearBindBtn.Font = Enum.Font.GothamBold
-    ClearBindBtn.TextSize = 12
+    ClearBindBtn.TextSize = 18
     ClearBindBtn.Parent = FE
-    Instance.new("UICorner", ClearBindBtn).CornerRadius = UDim.new(0, 4)
+    Instance.new("UICorner", ClearBindBtn).CornerRadius = UDim.new(0, 6)
+    ClearBindBtn.ZIndex = 10
 
     ClearBindBtn.MouseButton1Click:Connect(function()
         Bindings[stateKey] = nil
@@ -218,18 +303,18 @@ local function CreateBoundToggle(text, targetPage, callback, stateKey)
     end)
 
     local TBtn = Instance.new("TextButton")
-    TBtn.Size = UDim2.new(0, 40, 0, 20)
-    TBtn.Position = UDim2.new(1, -55, 0.5, -10)
+    TBtn.Size = UDim2.new(0, 50, 0, 26)
+    TBtn.Position = UDim2.new(1, -60, 0.5, -13)
     TBtn.BackgroundColor3 = Color3.fromRGB(35, 25, 55)
     TBtn.Text = ""
     TBtn.Parent = FE
-    Instance.new("UICorner", TBtn).CornerRadius = UDim.new(0, 10)
+    Instance.new("UICorner", TBtn).CornerRadius = UDim.new(0, 13)
     local TCir = Instance.new("Frame")
-    TCir.Size = UDim2.new(0, 14, 0, 14)
-    TCir.Position = UDim2.new(0, 3, 0.5, -7)
+    TCir.Size = UDim2.new(0, 18, 0, 18)
+    TCir.Position = UDim2.new(0, 4, 0.5, -9)
     TCir.BackgroundColor3 = Color3.fromRGB(120, 110, 140)
     TCir.Parent = TBtn
-    Instance.new("UICorner", TCir).CornerRadius = UDim.new(0, 7)
+    Instance.new("UICorner", TCir).CornerRadius = UDim.new(0, 9)
     table.insert(ToggleCircles, TCir)
     local stateValue = Instance.new("BoolValue", TBtn)
     stateValue.Name = "ToggleState"
@@ -241,7 +326,7 @@ local function CreateBoundToggle(text, targetPage, callback, stateKey)
         stateValue.Value = value
         local targetColor = value and AccentColor or Color3.fromRGB(120, 110, 140)
         Tweens:Create(TCir, TweenInfo.new(0.2), {
-            Position = value and UDim2.new(0, 23, 0.5, -7) or UDim2.new(0, 3, 0.5, -7),
+            Position = value and UDim2.new(0, 28, 0.5, -9) or UDim2.new(0, 4, 0.5, -9),
             BackgroundColor3 = targetColor
         }):Play()
         Tweens:Create(TBtn, TweenInfo.new(0.2), {
@@ -285,33 +370,72 @@ local function CreateBoundToggle(text, targetPage, callback, stateKey)
     }
 end
 
+-- Увеличенный слайдер
 local function CreateNewSlider(text, min, max, default, targetPage, callback)
-    local FE = Instance.new("Frame") FE.Size = UDim2.new(1, -10, 0, 55) FE.BackgroundColor3 = ButtonBGColor FE.Parent = targetPage
+    local FE = Instance.new("Frame")
+    FE.Size = UDim2.new(1, -10, 0, 70)
+    FE.BackgroundColor3 = ButtonBGColor
+    FE.Parent = targetPage
     Instance.new("UICorner", FE).CornerRadius = UDim.new(0, 6)
     table.insert(ButtonFrames, FE)
-    local Label = Instance.new("TextLabel") Label.Size = UDim2.new(1, -10, 0, 25) Label.BackgroundTransparency = 1 Label.Text = "   "..text
-    Label.TextColor3 = Color3.fromRGB(180, 170, 200) Label.TextSize = 12 Label.Font = Enum.Font.GothamBlack Label.TextXAlignment = "Left" Label.Parent = FE
-    local Track = Instance.new("Frame") Track.Size = UDim2.new(1, -30, 0, 6) Track.Position = UDim2.new(0, 15, 0, 35) Track.BackgroundColor3 = Color3.fromRGB(35, 25, 55) Track.Parent = FE
-    Instance.new("UICorner", Track).CornerRadius = UDim.new(0, 3)
-    local Bar = Instance.new("Frame") Bar.Size = UDim2.new((default-min)/(max-min), 0, 1, 0) Bar.BackgroundColor3 = AccentColor Bar.Parent = Track
-    Instance.new("UICorner", Bar).CornerRadius = UDim.new(0, 3)
+
+    local Label = Instance.new("TextLabel")
+    Label.Size = UDim2.new(1, -10, 0, 28)
+    Label.BackgroundTransparency = 1
+    Label.Text = "   "..text
+    Label.TextColor3 = Color3.fromRGB(180, 170, 200)
+    Label.TextSize = 14
+    Label.Font = Enum.Font.GothamBlack
+    Label.TextXAlignment = "Left"
+    Label.Parent = FE
+
+    local Track = Instance.new("Frame")
+    Track.Size = UDim2.new(1, -30, 0, 8)
+    Track.Position = UDim2.new(0, 15, 0, 42)
+    Track.BackgroundColor3 = Color3.fromRGB(35, 25, 55)
+    Track.Parent = FE
+    Instance.new("UICorner", Track).CornerRadius = UDim.new(0, 4)
+
+    local Bar = Instance.new("Frame")
+    Bar.Size = UDim2.new((default-min)/(max-min), 0, 1, 0)
+    Bar.BackgroundColor3 = AccentColor
+    Bar.Parent = Track
+    Instance.new("UICorner", Bar).CornerRadius = UDim.new(0, 4)
     table.insert(SliderBars, Bar)
-    local ValL = Instance.new("TextLabel") ValL.Size = UDim2.new(0, 40, 0, 20) ValL.Position = UDim2.new(1, -45, 0, 5) ValL.BackgroundTransparency = 1 ValL.Text = tostring(default) ValL.TextColor3 = Color3.fromRGB(255,255,255) ValL.Font = Enum.Font.GothamBold ValL.TextSize = 11 ValL.Parent = FE
+
+    local ValL = Instance.new("TextLabel")
+    ValL.Size = UDim2.new(0, 50, 0, 24)
+    ValL.Position = UDim2.new(1, -55, 0, 5)
+    ValL.BackgroundTransparency = 1
+    ValL.Text = tostring(default)
+    ValL.TextColor3 = Color3.fromRGB(255,255,255)
+    ValL.Font = Enum.Font.GothamBold
+    ValL.TextSize = 14
+    ValL.Parent = FE
+
     local down = false
     local function update(input)
         local dist = math.clamp((input.Position.X - Track.AbsolutePosition.X) / Track.AbsoluteSize.X, 0, 1)
         Bar.Size = UDim2.new(dist, 0, 1, 0)
         local val = math.floor(min + (dist * (max - min)))
-        ValL.Text = tostring(val) callback(val)
+        ValL.Text = tostring(val)
+        callback(val)
     end
     Track.InputBegan:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 then down = true update(i) end end)
     UIS.InputEnded:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 then down = false end end)
     UIS.InputChanged:Connect(function(i) if down and i.UserInputType == Enum.UserInputType.MouseMovement then update(i) end end)
 end
 
+-- Увеличенная кнопка
 local function CreateNewButton(text, color, targetPage, callback)
-    local Btn = Instance.new("TextButton") Btn.Size = UDim2.new(1, -10, 0, 40) Btn.BackgroundColor3 = color Btn.Text = text
-    Btn.TextColor3 = Color3.fromRGB(255, 255, 255) Btn.Font = Enum.Font.GothamBlack Btn.TextSize = 13 Btn.Parent = targetPage
+    local Btn = Instance.new("TextButton")
+    Btn.Size = UDim2.new(1, -10, 0, 50)
+    Btn.BackgroundColor3 = color
+    Btn.Text = text
+    Btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Btn.Font = Enum.Font.GothamBlack
+    Btn.TextSize = 15
+    Btn.Parent = targetPage
     Instance.new("UICorner", Btn).CornerRadius = UDim.new(0, 6)
     Btn.MouseButton1Click:Connect(callback)
 end
@@ -406,7 +530,7 @@ CreateNewButton("Giant Hitbox (500)", Color3.fromRGB(200, 50, 150), Pages.Combat
     if States.Hitbox then UpdateAllHitboxes() end
 end)
 CreateBoundToggle("Autogun (Fast Fire)", Pages.Combat, function(state) States.Autogun = state end, "Autogun")
-CreateBoundToggle("No Recoil/Spread", Pages.Combat, function(state) States.NoSpread = state end, "NoSpread")
+CreateBoundToggle("No Recoil/Spread", Pages.Combat, function(state) States.NoSpread = state; ToggleNoSpread(state) end, "NoSpread")
 CreateBoundToggle("Wallbang (Shoot Walls)", Pages.Combat, function(state) States.Wallbang = state end, "Wallbang")
 
 CreateNewButton("Kill Murderer (Sheriff)", Color3.fromRGB(0, 100, 255), Pages.Combat, function()
@@ -422,22 +546,14 @@ CreateNewButton("Kill Murderer (Sheriff)", Color3.fromRGB(0, 100, 255), Pages.Co
     local myHrp = myChar.HumanoidRootPart
     local targetHead = murderer.Character.Head
     
-    -- Сохраняем позицию
     local oldCF = myHrp.CFrame
     
-    -- Быстро прицеливаемся и стреляем
     for i = 1, 3 do
-        -- Наводим камеру на голову убийцы
         workspace.CurrentCamera.CFrame = CFrame.new(workspace.CurrentCamera.CFrame.Position, targetHead.Position)
-        
-        -- Активируем оружие (выстрел)
         gun:Activate()
-        
-        -- Небольшая пауза между выстрелами
         task.wait(0.1)
     end
     
-    -- Возвращаем камеру
     if myHrp then
         workspace.CurrentCamera.CFrame = CFrame.new(workspace.CurrentCamera.CFrame.Position, targetHead.Position)
     end
@@ -493,12 +609,22 @@ CreateBoundToggle("BunnyHop (CS 1.6)", Pages.Movement, function(state) States.BH
 CreateBoundToggle("Noclip (Keep Floor)", Pages.Movement, function(state)
     States.Noclip = state
     if not state and LP.Character then
+        -- Восстанавливаем коллизию и гравитацию при выключении ноклипа
+        local hum = LP.Character:FindFirstChild("Humanoid")
+        if hum then hum.PlatformStand = false end
         for _, part in ipairs(LP.Character:GetChildren()) do
             if part:IsA("BasePart") then part.CanCollide = true end
         end
     end
 end, "Noclip")
-CreateBoundToggle("Fly Mode", Pages.Movement, function(state) States.Fly = state end, "Fly")
+CreateBoundToggle("Fly Mode", Pages.Movement, function(state)
+    States.Fly = state
+    if not state and LP.Character then
+        -- Восстанавливаем гравитацию при выключении полёта
+        local hum = LP.Character:FindFirstChild("Humanoid")
+        if hum then hum.PlatformStand = false end
+    end
+end, "Fly")
 CreateNewSlider("Fly Speed Control", 10, 100, 30, Pages.Movement, function(val) FlySpeed = val end)
 
 -- Misc
@@ -525,102 +651,141 @@ CreateBoundToggle("Auto Teleport Gun", Pages.Misc, function(state)
 end, "AutoTeleportGun")
 CreateNewSlider("Gun TP Delay (s)", 0.5, 5, 1, Pages.Misc, function(val) GunTPDelay = val end)
 
-local function FlingPlayer(target)
-    if not target or not target.Character or not target.Character:FindFirstChild("HumanoidRootPart") then return end
-    local myChar = LP.Character
-    if not myChar or not myChar:FindFirstChild("HumanoidRootPart") or not myChar:FindFirstChild("Humanoid") then return end
-    local myHrp = myChar.HumanoidRootPart
-    local targetHrp = target.Character.HumanoidRootPart
-    local oldCFrame = myHrp.CFrame
-    for _, part in pairs(myChar:GetChildren()) do if part:IsA("BasePart") then part.CanCollide = false end end
-    local endTime = tick() + 2.0
-    local angle = 0
-    while tick() < endTime and myChar and myHrp and targetHrp and targetHrp.Parent do
-        RunService.Heartbeat:Wait()
-        angle = angle + 1.2
-        local offset = Vector3.new(math.sin(angle) * 1.3, 0.3, math.cos(angle) * 1.3)
-        myHrp.Velocity = Vector3.new(95000, 95000, 95000)
-        myHrp.RotVelocity = Vector3.new(95000, 95000, 95000)
-        myHrp.CFrame = CFrame.new(targetHrp.Position + offset)
-    end
-    if myHrp then myHrp.Velocity = Vector3.new(0, 0, 0) myHrp.RotVelocity = Vector3.new(0, 0, 0) myHrp.CFrame = oldCFrame end
-    task.wait(0.1)
-end
-
+-- ===== ПОЛЕ ВВОДА ДЛЯ FLING TARGET =====
 local FlingInputFrame = Instance.new("Frame")
-FlingInputFrame.Size = UDim2.new(1, -10, 0, 40); FlingInputFrame.BackgroundColor3 = Color3.fromRGB(20, 13, 35); FlingInputFrame.Parent = Pages.Misc
+FlingInputFrame.Size = UDim2.new(1, -10, 0, 50)
+FlingInputFrame.BackgroundColor3 = Color3.fromRGB(20, 13, 35)
+FlingInputFrame.Parent = Pages.Misc
 Instance.new("UICorner", FlingInputFrame).CornerRadius = UDim.new(0, 6)
 table.insert(ButtonFrames, FlingInputFrame)
 
 local FlingTextBox = Instance.new("TextBox")
-FlingTextBox.Size = UDim2.new(1, -20, 1, 0); FlingTextBox.Position = UDim2.new(0, 10, 0, 0); FlingTextBox.BackgroundTransparency = 1; FlingTextBox.Text = ""
-FlingTextBox.PlaceholderText = "Type player name for Fling Target..."; FlingTextBox.PlaceholderColor3 = Color3.fromRGB(110, 95, 135)
-FlingTextBox.TextColor3 = Color3.fromRGB(255, 255, 255); FlingTextBox.Font = Enum.Font.GothamBold; FlingTextBox.TextSize = 13; FlingTextBox.TextXAlignment = "Left"; FlingTextBox.Parent = FlingInputFrame
-local HubBtnColor = Color3.fromRGB(35, 20, 60)
+FlingTextBox.Size = UDim2.new(1, -20, 1, 0)
+FlingTextBox.Position = UDim2.new(0, 10, 0, 0)
+FlingTextBox.BackgroundTransparency = 1
+FlingTextBox.Text = ""
+FlingTextBox.PlaceholderText = "Type player name for Fling Target..."
+FlingTextBox.PlaceholderColor3 = Color3.fromRGB(110, 95, 135)
+FlingTextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+FlingTextBox.Font = Enum.Font.GothamBold
+FlingTextBox.TextSize = 15
+FlingTextBox.TextXAlignment = "Left"
+FlingTextBox.Parent = FlingInputFrame
 
--- Исправленная функция телепорта на карту
-local function TeleportToActiveMap()
+-- ===== ИСПРАВЛЕННАЯ ФУНКЦИЯ ФЛИНГА (с возможностью остановки) =====
+local function FlingPlayer(target, stopCheck)
+    if not target or not target.Character then
+        print("FlingPlayer: target or character nil")
+        return false
+    end
+    local targetHrp = target.Character:FindFirstChild("HumanoidRootPart")
+    if not targetHrp then
+        print("FlingPlayer: target has no HumanoidRootPart")
+        return false
+    end
     local myChar = LP.Character
-    local hrp = myChar and myChar:FindFirstChild("HumanoidRootPart")
-    if not hrp then return false end
-    
-    hrp.Velocity = Vector3.new(0, 0, 0)
-    hrp.RotVelocity = Vector3.new(0, 0, 0)
-    
-    local lobby = workspace:FindFirstChild("Lobby")
-    
-    local mapParts = {}
-    for _, obj in pairs(workspace:GetDescendants()) do
-        if obj:IsA("BasePart") and obj.Size.Magnitude > 10 then
-            local isInLobby = false
-            if lobby then
-                local parent = obj.Parent
-                while parent do
-                    if parent == lobby then
-                        isInLobby = true
-                        break
-                    end
-                    parent = parent.Parent
-                end
-            end
-            
-            if not isInLobby then
-                table.insert(mapParts, obj)
-            end
+    if not myChar then
+        print("FlingPlayer: local player has no character")
+        return false
+    end
+    local myHrp = myChar:FindFirstChild("HumanoidRootPart")
+    local myHum = myChar:FindFirstChild("Humanoid")
+    if not myHrp or not myHum or myHum.Health <= 0 then
+        print("FlingPlayer: local player invalid")
+        return false
+    end
+
+    local oldCFrame = myHrp.CFrame
+    -- Отключаем коллизии у себя
+    for _, part in pairs(myChar:GetChildren()) do
+        if part:IsA("BasePart") then
+            part.CanCollide = false
         end
     end
-    
-    if #mapParts > 0 then
-        table.sort(mapParts, function(a, b) 
-            return a.Size.Magnitude > b.Size.Magnitude 
-        end)
-        
-        local targetPart = mapParts[1]
-        hrp.CFrame = targetPart.CFrame * CFrame.new(0, 5, 0)
-        return true
+
+    local endTime = tick() + 2.0
+    local angle = 0
+    while tick() < endTime and myChar and myHrp and targetHrp and targetHrp.Parent do
+        if stopCheck and stopCheck() then
+            print("Fling stopped by user")
+            break
+        end
+        RunService.Heartbeat:Wait()
+        angle = angle + 1.2
+        local offset = Vector3.new(math.sin(angle) * 1.5, 0.5, math.cos(angle) * 1.5)
+        myHrp.Velocity = Vector3.new(95000, 95000, 95000)
+        myHrp.RotVelocity = Vector3.new(95000, 95000, 95000)
+        myHrp.CFrame = CFrame.new(targetHrp.Position + offset)
     end
-    
-    hrp.CFrame = CFrame.new(0, 50, 0)
+
+    -- Восстанавливаем
+    if myHrp then
+        myHrp.Velocity = Vector3.new(0, 0, 0)
+        myHrp.RotVelocity = Vector3.new(0, 0, 0)
+        myHrp.CFrame = oldCFrame
+    end
+    task.wait(0.1)
     return true
 end
 
-CreateNewButton("Fling Target", HubBtnColor, Pages.Misc, function()
-    local text = FlingTextBox.Text:lower()
-    local target = nil
-    if text ~= "" then
-        for _, p in pairs(Plrs:GetPlayers()) do if p ~= LP and p.Name:lower():sub(1, #text) == text then target = p; break end end
-    else target = GetClosestPlayer(false) end
-    if target then FlingPlayer(target) end
-end)
+-- ===== ТУМБЛЕРЫ FLING =====
+CreateBoundToggle("Fling Target", Pages.Misc, function(state)
+    States.FlingTarget = state
+    print("Fling Target toggled:", state)
+    if state then
+        task.spawn(function()
+            while States.FlingTarget do
+                if not States.FlingTarget then break end
+                local text = FlingTextBox.Text:lower()
+                local target = nil
+                if text ~= "" then
+                    for _, p in pairs(Plrs:GetPlayers()) do
+                        if p ~= LP and p.Name:lower():sub(1, #text) == text then
+                            target = p
+                            break
+                        end
+                    end
+                else
+                    target = GetClosestPlayer(false)
+                end
+                if target then
+                    print("Flinging target:", target.Name)
+                    FlingPlayer(target, function() return not States.FlingTarget end)
+                else
+                    print("No target found for Fling Target")
+                end
+                task.wait(2.5)
+            end
+        end)
+    end
+end, "FlingTarget")
 
-CreateNewButton("Fling All", HubBtnColor, Pages.Misc, function()
-    task.spawn(function() for _, p in pairs(Plrs:GetPlayers()) do if p ~= LP and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then FlingPlayer(p) end end end)
-end)
+CreateBoundToggle("Fling All", Pages.Misc, function(state)
+    States.FlingAll = state
+    print("Fling All toggled:", state)
+    if state then
+        task.spawn(function()
+            while States.FlingAll do
+                if not States.FlingAll then break end
+                local playersFlinged = 0
+                for _, p in pairs(Plrs:GetPlayers()) do
+                    if p ~= LP and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+                        FlingPlayer(p, function() return not States.FlingAll end)
+                        playersFlinged = playersFlinged + 1
+                    end
+                end
+                print("Flinged", playersFlinged, "players")
+                task.wait(2.5)
+            end
+        end)
+    end
+end, "FlingAll")
 
+-- Остальные кнопки (одноразовые)
+local HubBtnColor = Color3.fromRGB(35, 20, 60)
 CreateNewButton("Fling Sheriff", HubBtnColor, Pages.Misc, function()
     for _, p in pairs(Plrs:GetPlayers()) do if p ~= LP and p.Character and (p.Character:FindFirstChild("Gun") or p.Backpack:FindFirstChild("Gun")) then FlingPlayer(p); break end end
 end)
-
 CreateNewButton("Fling Murderer", HubBtnColor, Pages.Misc, function()
     for _, p in pairs(Plrs:GetPlayers()) do if p ~= LP and p.Character and (p.Character:FindFirstChild("Knife") or p.Backpack:FindFirstChild("Knife")) then FlingPlayer(p); break end end
 end)
@@ -628,14 +793,12 @@ end)
 CreateNewButton("TP Map", Color3.fromRGB(55, 20, 90), Pages.Misc, function()
     TeleportToActiveMap()
 end)
-
 CreateNewButton("TP Lobby", Color3.fromRGB(25, 15, 45), Pages.Misc, function()
     local myChar = LP.Character
     if myChar and myChar:FindFirstChild("HumanoidRootPart") then
         local hrp = myChar.HumanoidRootPart
         hrp.Velocity = Vector3.new(0, 0, 0)
         hrp.RotVelocity = Vector3.new(0, 0, 0)
-        
         local lobby = workspace:FindFirstChild("Lobby")
         if lobby then
             local lobbyParts = {}
@@ -644,20 +807,49 @@ CreateNewButton("TP Lobby", Color3.fromRGB(25, 15, 45), Pages.Misc, function()
                     table.insert(lobbyParts, part)
                 end
             end
-            
             if #lobbyParts > 0 then
-                table.sort(lobbyParts, function(a, b) 
-                    return a.Size.Magnitude > b.Size.Magnitude 
-                end)
+                table.sort(lobbyParts, function(a, b) return a.Size.Magnitude > b.Size.Magnitude end)
                 hrp.CFrame = lobbyParts[1].CFrame * CFrame.new(0, 5, 0)
                 return
             end
         end
-        
         hrp.CFrame = CFrame.new(-108.5, 140, -11.5)
     end
 end)
 
+-- Функция телепорта на активную карту
+local function TeleportToActiveMap()
+    local myChar = LP.Character
+    local hrp = myChar and myChar:FindFirstChild("HumanoidRootPart")
+    if not hrp then return false end
+    hrp.Velocity = Vector3.new(0, 0, 0)
+    hrp.RotVelocity = Vector3.new(0, 0, 0)
+    local lobby = workspace:FindFirstChild("Lobby")
+    local mapParts = {}
+    for _, obj in pairs(workspace:GetDescendants()) do
+        if obj:IsA("BasePart") and obj.Size.Magnitude > 10 then
+            local isInLobby = false
+            if lobby then
+                local parent = obj.Parent
+                while parent do
+                    if parent == lobby then isInLobby = true; break end
+                    parent = parent.Parent
+                end
+            end
+            if not isInLobby then table.insert(mapParts, obj) end
+        end
+    end
+    if #mapParts > 0 then
+        table.sort(mapParts, function(a, b) return a.Size.Magnitude > b.Size.Magnitude end)
+        local targetPart = mapParts[1]
+        hrp.CFrame = targetPart.CFrame * CFrame.new(0, 5, 0)
+        return true
+    end
+    hrp.CFrame = CFrame.new(0, 50, 0)
+    return true
+end
+
+-- ===== ОСТАЛЬНОЙ КОД =====
 local MouseDown = false
 UIS.InputBegan:Connect(function(input, gpe)
     if gpe then return end
@@ -732,86 +924,73 @@ task.spawn(function()
     end
 end)
 
--- Исправленный NoSpread/NoRecoil
+-- NoSpread/NoRecoil
 local NoSpreadConnections = {}
 local function ToggleNoSpread(state)
     if state then
-        -- Очищаем старые соединения
-        for _, conn in pairs(NoSpreadConnections) do
-            conn:Disconnect()
-        end
+        for _, conn in pairs(NoSpreadConnections) do conn:Disconnect() end
         NoSpreadConnections = {}
-        
-        -- Подключаемся к изменению экипировки
         local function setupTool(tool)
             if tool and tool:IsA("Tool") then
-                -- Обнуляем отдачу через повторяющуюся проверку
                 local conn = RunService.Heartbeat:Connect(function()
                     if tool.Parent and States.NoSpread then
-                        -- Пытаемся обнулить отдачу через разные методы
                         pcall(function()
                             local handle = tool:FindFirstChild("Handle")
-                            if handle and handle:FindFirstChild("Recoil") then
-                                handle.Recoil:Destroy()
-                            end
+                            if handle and handle:FindFirstChild("Recoil") then handle.Recoil:Destroy() end
                         end)
                         pcall(function()
-                            if tool:FindFirstChild("Recoil") then
-                                tool.Recoil:Destroy()
-                            end
+                            if tool:FindFirstChild("Recoil") then tool.Recoil:Destroy() end
                         end)
                     end
                 end)
                 table.insert(NoSpreadConnections, conn)
             end
         end
-        
-        -- Проверяем текущий инструмент
         if LP.Character then
             local currentTool = LP.Character:FindFirstChildOfClass("Tool")
             if currentTool then setupTool(currentTool) end
         end
-        
-        -- Следим за новыми инструментами
         if LP.Character then
             local conn = LP.Character.ChildAdded:Connect(function(child)
-                if child:IsA("Tool") then
-                    setupTool(child)
-                end
+                if child:IsA("Tool") then setupTool(child) end
             end)
             table.insert(NoSpreadConnections, conn)
         end
     else
-        -- Отключаем всё
-        for _, conn in pairs(NoSpreadConnections) do
-            conn:Disconnect()
-        end
+        for _, conn in pairs(NoSpreadConnections) do conn:Disconnect() end
         NoSpreadConnections = {}
     end
 end
 
+-- ===== ИЗМЕНЕННАЯ МЕХАНИКА FLY И NOCLIP (без телепортации под карту) =====
 RunService.Heartbeat:Connect(function()
-    local myChar = LP.Character if not myChar then return end
+    local myChar = LP.Character
+    if not myChar then return end
+    local hum = myChar:FindFirstChild("Humanoid")
+    local hrp = myChar:FindFirstChild("HumanoidRootPart")
+    if not hum or not hrp then return end
+
+    -- Aimbot и Aim Assist (только при зажатой ПКМ)
     if States.Aimbot and UIS:IsMouseButtonPressed(Enum.UserInputType.MouseButton2) then
         local target = GetClosestPlayer(false)
         if target and target.Character and target.Character:FindFirstChild("Head") then 
             workspace.CurrentCamera.CFrame = CFrame.new(workspace.CurrentCamera.CFrame.Position, target.Character.Head.Position) 
         end
-    elseif States.AimAssist then
+    elseif States.AimAssist and UIS:IsMouseButtonPressed(Enum.UserInputType.MouseButton2) then
         local target = GetClosestPlayer(true)
         if target and target.Character and target.Character:FindFirstChild("Head") then
             local camCF = workspace.CurrentCamera.CFrame
             workspace.CurrentCamera.CFrame = camCF:Lerp(CFrame.new(camCF.Position, target.Character.Head.Position), 0.15)
         end
     end
-    if myChar:FindFirstChild("Humanoid") and TargetSpeed ~= 16 and not States.BHop and not States.CoinFarm then
-        myChar.Humanoid.WalkSpeed = TargetSpeed
-        if myChar:FindFirstChild("HumanoidRootPart") then 
-            myChar.HumanoidRootPart.AssemblyLinearVelocity = myChar.Humanoid.MoveDirection * TargetSpeed 
-        end
+
+    -- WalkSpeed (если не активен BHop и не CoinFarm)
+    if not States.BHop and not States.CoinFarm then
+        hum.WalkSpeed = TargetSpeed
     end
-    if States.BHop and myChar:FindFirstChild("Humanoid") and myChar:FindFirstChild("HumanoidRootPart") then
-        local hum = myChar.Humanoid; local hrp = myChar.HumanoidRootPart
+
+    -- BHop
+    if States.BHop then
         if UIS:IsKeyDown(Enum.KeyCode.Space) then
             if hum.FloorMaterial ~= Enum.Material.Air then 
                 hum:ChangeState(Enum.HumanoidStateType.Jumping) 
@@ -823,42 +1002,74 @@ RunService.Heartbeat:Connect(function()
         end
     end
 
-    if States.Noclip or States.CoinFarm then
-        local hrp = myChar:FindFirstChild("HumanoidRootPart")
-        if hrp then
-            for _, part in ipairs(myChar:GetChildren()) do
-                if part:IsA("BasePart") then part.CanCollide = false end
-            end
-            local rayOrigin = hrp.Position + Vector3.new(0, 2, 0)
-            local rayDirection = Vector3.new(0, -15, 0)
-            local raycastParams = RaycastParams.new()
-            raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
-            raycastParams.FilterDescendantsInstances = {myChar}
-            local rayResult = workspace:Raycast(rayOrigin, rayDirection, raycastParams)
-            if rayResult then
-                local floorY = rayResult.Position.Y + 3.2
-                local currentY = hrp.Position.Y
-                if currentY > floorY + 0.2 then
-                    hrp.CFrame = CFrame.new(hrp.Position.X, floorY, hrp.Position.Z)
-                    hrp.Velocity = Vector3.new(hrp.Velocity.X, 0, hrp.Velocity.Z)
-                elseif currentY < floorY - 0.1 then
-                    hrp.CFrame = CFrame.new(hrp.Position.X, floorY, hrp.Position.Z)
-                end
+    -- Noclip (свободное перемещение без гравитации и коллизий)
+    if States.Noclip then
+        for _, part in ipairs(myChar:GetChildren()) do
+            if part:IsA("BasePart") then
+                part.CanCollide = false
             end
         end
+        hum.PlatformStand = true
     end
 
-    if States.Fly and myChar:FindFirstChild("HumanoidRootPart") then
-        local hrp = myChar.HumanoidRootPart; local cam = workspace.CurrentCamera; local moveDir = Vector3.new(0, 0, 0)
+    -- Fly (управление с клавиатуры, без гравитации)
+    if States.Fly then
+        hum.PlatformStand = true
+        local cam = workspace.CurrentCamera
+        local moveDir = Vector3.new(0, 0, 0)
         if UIS:IsKeyDown(Enum.KeyCode.W) then moveDir = moveDir + cam.CFrame.LookVector end
         if UIS:IsKeyDown(Enum.KeyCode.S) then moveDir = moveDir - cam.CFrame.LookVector end
         if UIS:IsKeyDown(Enum.KeyCode.A) then moveDir = moveDir - cam.CFrame.RightVector end
         if UIS:IsKeyDown(Enum.KeyCode.D) then moveDir = moveDir + cam.CFrame.RightVector end
         if UIS:IsKeyDown(Enum.KeyCode.Space) then moveDir = moveDir + Vector3.new(0, 1, 0) end
         if UIS:IsKeyDown(Enum.KeyCode.LeftShift) then moveDir = moveDir - Vector3.new(0, 1, 0) end
-        hrp.Velocity = moveDir.Unit * (moveDir.Magnitude > 0 and FlySpeed or 0)
-        if moveDir.Magnitude == 0 then hrp.Velocity = Vector3.new(0, 0.1, 0) end
+        if moveDir.Magnitude > 0 then
+            hrp.Velocity = moveDir.Unit * FlySpeed
+        else
+            hrp.Velocity = Vector3.new(0, 0.1, 0) -- чтобы не падать
+        end
     end
+
+    -- CoinFarm (использует старую логику с рейкастом и телепортацией, но только если CoinFarm активен)
+    if States.CoinFarm then
+        -- отключаем коллизию для прохода сквозь стены
+        for _, part in ipairs(myChar:GetChildren()) do
+            if part:IsA("BasePart") then
+                part.CanCollide = false
+            end
+        end
+        -- Притягиваем к полу, чтобы не улететь
+        local rayOrigin = hrp.Position + Vector3.new(0, 2, 0)
+        local rayDirection = Vector3.new(0, -15, 0)
+        local raycastParams = RaycastParams.new()
+        raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
+        raycastParams.FilterDescendantsInstances = {myChar}
+        local rayResult = workspace:Raycast(rayOrigin, rayDirection, raycastParams)
+        if rayResult then
+            local floorY = rayResult.Position.Y + 3.2
+            local currentY = hrp.Position.Y
+            if currentY > floorY + 0.2 then
+                hrp.CFrame = CFrame.new(hrp.Position.X, floorY, hrp.Position.Z)
+                hrp.Velocity = Vector3.new(hrp.Velocity.X, 0, hrp.Velocity.Z)
+            elseif currentY < floorY - 0.1 then
+                hrp.CFrame = CFrame.new(hrp.Position.X, floorY, hrp.Position.Z)
+            end
+        end
+        -- Оставляем PlatformStand = false, чтобы гравитация действовала
+        hum.PlatformStand = false
+    end
+
+    -- Если ни один режим (Noclip, Fly, CoinFarm) не активен, восстанавливаем коллизию и гравитацию
+    if not States.Noclip and not States.Fly and not States.CoinFarm then
+        for _, part in ipairs(myChar:GetChildren()) do
+            if part:IsA("BasePart") then
+                part.CanCollide = true
+            end
+        end
+        hum.PlatformStand = false
+    end
+
+    -- Wallbang
     if States.Wallbang then
         local bulletNames = {"Bullet", "Projectile", "PlayerProjectile", "Part", "Handle"}
         for _, obj in pairs(workspace:GetDescendants()) do
@@ -868,6 +1079,8 @@ RunService.Heartbeat:Connect(function()
             end
         end
     end
+
+    -- AntiFling
     if States.AntiFling then
         for _, p in pairs(Plrs:GetPlayers()) do
             if p ~= LP and p.Character then
@@ -883,6 +1096,7 @@ RunService.Heartbeat:Connect(function()
     end
 end)
 
+-- Обновление хитбоксов
 function UpdateAllHitboxes()
     for _, p in pairs(Plrs:GetPlayers()) do
         if p ~= LP and p.Character and p.Character:FindFirstChild("HumanoidRootPart") and p.Character:FindFirstChild("Head") then
@@ -979,31 +1193,31 @@ CreateNewButton("Apply Button BG", Color3.fromRGB(70, 25, 100), Pages.Settings, 
 end)
 
 local KeybindFrame = Instance.new("Frame")
-KeybindFrame.Size = UDim2.new(1, -10, 0, 46)
+KeybindFrame.Size = UDim2.new(1, -10, 0, 50)
 KeybindFrame.BackgroundColor3 = ButtonBGColor
 KeybindFrame.Parent = Pages.Settings
 Instance.new("UICorner", KeybindFrame).CornerRadius = UDim.new(0, 6)
 table.insert(ButtonFrames, KeybindFrame)
 
 local KeyLabel = Instance.new("TextLabel")
-KeyLabel.Size = UDim2.new(1, -120, 1, 0)
+KeyLabel.Size = UDim2.new(1, -130, 1, 0)
 KeyLabel.Position = UDim2.new(0, 10, 0, 0)
 KeyLabel.BackgroundTransparency = 1
 KeyLabel.Text = "   Menu Keybind"
 KeyLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-KeyLabel.TextSize = 13
+KeyLabel.TextSize = 15
 KeyLabel.Font = Enum.Font.GothamBlack
 KeyLabel.TextXAlignment = "Left"
 KeyLabel.Parent = KeybindFrame
 
 local KeybindButton = Instance.new("TextButton")
-KeybindButton.Size = UDim2.new(0, 90, 0, 24)
-KeybindButton.Position = UDim2.new(1, -105, 0.5, -12)
+KeybindButton.Size = UDim2.new(0, 100, 0, 28)
+KeybindButton.Position = UDim2.new(1, -115, 0.5, -14)
 KeybindButton.BackgroundColor3 = Color3.fromRGB(45, 25, 65)
 KeybindButton.Text = MenuKey.Name
 KeybindButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 KeybindButton.Font = Enum.Font.GothamBold
-KeybindButton.TextSize = 12
+KeybindButton.TextSize = 14
 KeybindButton.Parent = KeybindFrame
 Instance.new("UICorner", KeybindButton).CornerRadius = UDim.new(0, 5)
 
@@ -1048,9 +1262,14 @@ local function ToggleFunction(stateKey)
         else
             States[stateKey] = not States[stateKey]
             if stateKey == "Noclip" and not States.Noclip and LP.Character then
+                local hum = LP.Character:FindFirstChild("Humanoid")
+                if hum then hum.PlatformStand = false end
                 for _, part in ipairs(LP.Character:GetChildren()) do
                     if part:IsA("BasePart") then part.CanCollide = true end
                 end
+            elseif stateKey == "Fly" and not States.Fly and LP.Character then
+                local hum = LP.Character:FindFirstChild("Humanoid")
+                if hum then hum.PlatformStand = false end
             elseif stateKey == "Hitbox" then
                 UpdateAllHitboxes()
             elseif stateKey == "AutoTeleportGun" then
@@ -1087,4 +1306,4 @@ UIS.InputBegan:Connect(function(input, gpe)
             end
         end
     end
-end
+end)
