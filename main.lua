@@ -34,8 +34,8 @@ local SliderBars = {}
 local ToggleCircles = {}
 local PageFrames = {}
 local ButtonFrames = {}
-local ToggleControls = {} -- [stateKey] = {SetVisual, GetState, Callback, BindButton}
-local Bindings = {}      -- [stateKey] = Enum.KeyCode (или nil)
+local ToggleControls = {}
+local Bindings = {}
 
 local AvatarId = "rbxassetid://0"
 pcall(function() AvatarId = Plrs:GetUserThumbnailAsync(LP.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size150x150) end)
@@ -69,29 +69,21 @@ local Logo = Instance.new("TextLabel") Logo.Size = UDim2.new(0, 180, 0, 40) Logo
 Logo.Text = "Kurindik hub" Logo.TextColor3 = Color3.fromRGB(255, 255, 255) Logo.TextSize = 22
 Logo.Font = Enum.Font.GothamBlack; Logo.TextXAlignment = "Left"; Logo.BackgroundTransparency = 1; Logo.Parent = SB
 
--- Made by @VintuScripts в боковой панели
 local CreatorLabel = Instance.new("TextLabel")
 CreatorLabel.Size = UDim2.new(1, -20, 0, 20)
 CreatorLabel.Position = UDim2.new(0, 10, 1, -40)
 CreatorLabel.Text = "Made by VintuScripts"
 CreatorLabel.TextColor3 = Color3.fromRGB(180, 150, 255)
-CreatorLabel.TextSize = 11
-CreatorLabel.Font = Enum.Font.GothamBold
-CreatorLabel.TextXAlignment = "Center"
-CreatorLabel.BackgroundTransparency = 1
-CreatorLabel.Parent = SB
+CreatorLabel.TextSize = 11; CreatorLabel.Font = Enum.Font.GothamBlack
+CreatorLabel.TextXAlignment = "Center"; CreatorLabel.BackgroundTransparency = 1; CreatorLabel.Parent = SB
 
--- Made by @VintuScripts в правом нижнем углу
 local CreatorCorner = Instance.new("TextLabel")
 CreatorCorner.Size = UDim2.new(0, 140, 0, 18)
 CreatorCorner.Position = UDim2.new(1, -150, 1, -25)
 CreatorCorner.Text = "Made by @VintuScripts"
 CreatorCorner.TextColor3 = Color3.fromRGB(150, 120, 200)
-CreatorCorner.TextSize = 10
-CreatorCorner.Font = Enum.Font.GothamBold
-CreatorCorner.TextXAlignment = "Right"
-CreatorCorner.BackgroundTransparency = 1
-CreatorCorner.Parent = MF
+CreatorCorner.TextSize = 10; CreatorCorner.Font = Enum.Font.GothamBold
+CreatorCorner.TextXAlignment = "Right"; CreatorCorner.BackgroundTransparency = 1; CreatorCorner.Parent = MF
 
 local TC = Instance.new("Frame") TC.Name = "TabContainer" TC.Size = UDim2.new(1, -20, 0, 190) TC.Position = UDim2.new(0, 10, 0, 70)
 TC.BackgroundTransparency = 1; TC.Parent = SB
@@ -188,7 +180,6 @@ local function CreateBoundToggle(text, targetPage, callback, stateKey)
     Instance.new("UICorner", FE).CornerRadius = UDim.new(0, 6)
     table.insert(ButtonFrames, FE)
 
-    -- Название (левая часть)
     local Label = Instance.new("TextLabel")
     Label.Size = UDim2.new(0, 130, 1, 0)
     Label.BackgroundTransparency = 1
@@ -199,7 +190,6 @@ local function CreateBoundToggle(text, targetPage, callback, stateKey)
     Label.TextXAlignment = "Left"
     Label.Parent = FE
 
-    -- Кнопка бинда (чуть правее названия)
     local BindBtn = Instance.new("TextButton")
     BindBtn.Size = UDim2.new(0, 55, 0, 20)
     BindBtn.Position = UDim2.new(0, 135, 0.5, -10)
@@ -211,10 +201,9 @@ local function CreateBoundToggle(text, targetPage, callback, stateKey)
     BindBtn.Parent = FE
     Instance.new("UICorner", BindBtn).CornerRadius = UDim.new(0, 4)
 
-    -- Кнопка сброса (крестик) рядом
     local ClearBindBtn = Instance.new("TextButton")
     ClearBindBtn.Size = UDim2.new(0, 18, 0, 18)
-    ClearBindBtn.Position = UDim2.new(0, 193, 0.5, -9)  -- сразу за BindBtn
+    ClearBindBtn.Position = UDim2.new(0, 193, 0.5, -9)
     ClearBindBtn.BackgroundColor3 = Color3.fromRGB(80, 30, 30)
     ClearBindBtn.Text = "✕"
     ClearBindBtn.TextColor3 = Color3.fromRGB(255, 200, 200)
@@ -228,7 +217,6 @@ local function CreateBoundToggle(text, targetPage, callback, stateKey)
         BindBtn.Text = "Bind"
     end)
 
-    -- Переключатель (правая часть)
     local TBtn = Instance.new("TextButton")
     TBtn.Size = UDim2.new(0, 40, 0, 20)
     TBtn.Position = UDim2.new(1, -55, 0.5, -10)
@@ -248,7 +236,6 @@ local function CreateBoundToggle(text, targetPage, callback, stateKey)
     stateValue.Value = false
     local act = false
 
-    -- Функция установки визуального состояния
     local function setVisual(value)
         act = value
         stateValue.Value = value
@@ -262,14 +249,12 @@ local function CreateBoundToggle(text, targetPage, callback, stateKey)
         }):Play()
     end
 
-    -- Клик по переключателю
     TBtn.MouseButton1Click:Connect(function()
         local newState = not act
         setVisual(newState)
         callback(newState)
     end)
 
-    -- Назначение бинда через кнопку BindBtn
     local listening = false
     BindBtn.MouseButton1Click:Connect(function()
         if listening then return end
@@ -280,7 +265,6 @@ local function CreateBoundToggle(text, targetPage, callback, stateKey)
             if gpe then return end
             if input.UserInputType == Enum.UserInputType.Keyboard then
                 if input.KeyCode == Enum.KeyCode.Escape then
-                    -- Сброс бинда при нажатии Escape
                     Bindings[stateKey] = nil
                     BindBtn.Text = "Bind"
                 else
@@ -293,7 +277,6 @@ local function CreateBoundToggle(text, targetPage, callback, stateKey)
         end)
     end)
 
-    -- Сохраняем контрол для внешнего управления
     ToggleControls[stateKey] = {
         SetVisual = setVisual,
         GetState = function() return act end,
@@ -302,7 +285,6 @@ local function CreateBoundToggle(text, targetPage, callback, stateKey)
     }
 end
 
--- Обычные слайдеры и кнопки (без изменений)
 local function CreateNewSlider(text, min, max, default, targetPage, callback)
     local FE = Instance.new("Frame") FE.Size = UDim2.new(1, -10, 0, 55) FE.BackgroundColor3 = ButtonBGColor FE.Parent = targetPage
     Instance.new("UICorner", FE).CornerRadius = UDim.new(0, 6)
@@ -350,6 +332,18 @@ local function GetClosestPlayer(checkFov)
         end
     end
     return closest
+end
+
+-- Найти убийцу
+local function GetMurderer()
+    for _, p in pairs(Plrs:GetPlayers()) do
+        if p ~= LP and p.Character and p.Character:FindFirstChild("Humanoid") and p.Character.Humanoid.Health > 0 then
+            if p.Character:FindFirstChild("Knife") or p.Backpack:FindFirstChild("Knife") then
+                return p
+            end
+        end
+    end
+    return nil
 end
 
 local ESP_Objects = {}
@@ -412,8 +406,43 @@ CreateNewButton("Giant Hitbox (500)", Color3.fromRGB(200, 50, 150), Pages.Combat
     if States.Hitbox then UpdateAllHitboxes() end
 end)
 CreateBoundToggle("Autogun (Fast Fire)", Pages.Combat, function(state) States.Autogun = state end, "Autogun")
-CreateBoundToggle("No Spread (No Recoil)", Pages.Combat, function(state) States.NoSpread = state end, "NoSpread")
+CreateBoundToggle("No Recoil/Spread", Pages.Combat, function(state) States.NoSpread = state end, "NoSpread")
 CreateBoundToggle("Wallbang (Shoot Walls)", Pages.Combat, function(state) States.Wallbang = state end, "Wallbang")
+
+CreateNewButton("Kill Murderer (Sheriff)", Color3.fromRGB(0, 100, 255), Pages.Combat, function()
+    local myChar = LP.Character
+    if not myChar or not myChar:FindFirstChild("HumanoidRootPart") then return end
+    local gun = myChar:FindFirstChild("Gun") or LP.Backpack:FindFirstChild("Gun")
+    if not gun then return end
+    if gun.Parent == LP.Backpack then gun.Parent = myChar end
+    
+    local murderer = GetMurderer()
+    if not murderer or not murderer.Character or not murderer.Character:FindFirstChild("Head") then return end
+    
+    local myHrp = myChar.HumanoidRootPart
+    local targetHead = murderer.Character.Head
+    
+    -- Сохраняем позицию
+    local oldCF = myHrp.CFrame
+    
+    -- Быстро прицеливаемся и стреляем
+    for i = 1, 3 do
+        -- Наводим камеру на голову убийцы
+        workspace.CurrentCamera.CFrame = CFrame.new(workspace.CurrentCamera.CFrame.Position, targetHead.Position)
+        
+        -- Активируем оружие (выстрел)
+        gun:Activate()
+        
+        -- Небольшая пауза между выстрелами
+        task.wait(0.1)
+    end
+    
+    -- Возвращаем камеру
+    if myHrp then
+        workspace.CurrentCamera.CFrame = CFrame.new(workspace.CurrentCamera.CFrame.Position, targetHead.Position)
+    end
+end)
+
 CreateNewButton("Murderer Kill All", Color3.fromRGB(200, 0, 50), Pages.Combat, function()
     local myChar = LP.Character
     if not myChar or not myChar:FindFirstChild("HumanoidRootPart") then return end
@@ -421,7 +450,7 @@ CreateNewButton("Murderer Kill All", Color3.fromRGB(200, 0, 50), Pages.Combat, f
     if not knife then return end
     if knife.Parent == LP.Backpack then knife.Parent = myChar end
     local myHrp = myChar.HumanoidRootPart
-    local lobbyPos = Vector3.new(-108.5, 140, -11.5)
+    local lobby = workspace:FindFirstChild("Lobby")
     local oldCF = myHrp.CFrame
     local myHum = myChar:FindFirstChild("Humanoid")
     if not myHum then return end
@@ -430,7 +459,7 @@ CreateNewButton("Murderer Kill All", Color3.fromRGB(200, 0, 50), Pages.Combat, f
             if p ~= LP and p.Character and p.Character:FindFirstChild("HumanoidRootPart") and p.Character:FindFirstChild("Humanoid") then
                 local hum = p.Character.Humanoid
                 local hrp = p.Character.HumanoidRootPart
-                if hum.Health > 0 and (hrp.Position - lobbyPos).Magnitude > 50 then
+                if hum.Health > 0 and (not lobby or not hrp:IsDescendantOf(lobby)) then
                     local startTime = tick()
                     while tick() - startTime < 0.5 and p.Character and hum.Health > 0 and myHrp and myHum.Health > 0 do
                         RunService.Heartbeat:Wait()
@@ -476,7 +505,6 @@ CreateNewSlider("Fly Speed Control", 10, 100, 30, Pages.Movement, function(val) 
 CreateBoundToggle("Anti-Fling Protect", Pages.Misc, function(state) States.AntiFling = state end, "AntiFling")
 CreateBoundToggle("Auto-Farm Coins", Pages.Misc, function(state) States.CoinFarm = state end, "CoinFarm")
 
--- Auto Teleport Gun (переключатель с слайдером)
 local GunTPEnabled = false
 local GunTPDelay = 1
 CreateBoundToggle("Auto Teleport Gun", Pages.Misc, function(state)
@@ -530,32 +558,49 @@ FlingTextBox.PlaceholderText = "Type player name for Fling Target..."; FlingText
 FlingTextBox.TextColor3 = Color3.fromRGB(255, 255, 255); FlingTextBox.Font = Enum.Font.GothamBold; FlingTextBox.TextSize = 13; FlingTextBox.TextXAlignment = "Left"; FlingTextBox.Parent = FlingInputFrame
 local HubBtnColor = Color3.fromRGB(35, 20, 60)
 
+-- Исправленная функция телепорта на карту
 local function TeleportToActiveMap()
     local myChar = LP.Character
     local hrp = myChar and myChar:FindFirstChild("HumanoidRootPart")
     if not hrp then return false end
+    
     hrp.Velocity = Vector3.new(0, 0, 0)
     hrp.RotVelocity = Vector3.new(0, 0, 0)
-    local lobbyPos = Vector3.new(-108.5, 140, -11.5)
-    local function isInLobby(obj) return obj and (obj.Position - lobbyPos).Magnitude < 80 end
-    for _, folderName in pairs({"Normal", "Map", "CurrentMap"}) do
-        local mapFolder = workspace:FindFirstChild(folderName)
-        if mapFolder and not isInLobby(mapFolder) then
-            for _, part in pairs(mapFolder:GetDescendants()) do
-                if part:IsA("SpawnLocation") then
-                    hrp.CFrame = part.CFrame * CFrame.new(0, 4, 0)
-                    return true
+    
+    local lobby = workspace:FindFirstChild("Lobby")
+    
+    local mapParts = {}
+    for _, obj in pairs(workspace:GetDescendants()) do
+        if obj:IsA("BasePart") and obj.Size.Magnitude > 10 then
+            local isInLobby = false
+            if lobby then
+                local parent = obj.Parent
+                while parent do
+                    if parent == lobby then
+                        isInLobby = true
+                        break
+                    end
+                    parent = parent.Parent
                 end
+            end
+            
+            if not isInLobby then
+                table.insert(mapParts, obj)
             end
         end
     end
-    for _, spawn in pairs(workspace:GetDescendants()) do
-        if spawn:IsA("SpawnLocation") and not isInLobby(spawn) then
-            hrp.CFrame = spawn.CFrame * CFrame.new(0, 4, 0)
-            return true
-        end
+    
+    if #mapParts > 0 then
+        table.sort(mapParts, function(a, b) 
+            return a.Size.Magnitude > b.Size.Magnitude 
+        end)
+        
+        local targetPart = mapParts[1]
+        hrp.CFrame = targetPart.CFrame * CFrame.new(0, 5, 0)
+        return true
     end
-    hrp.CFrame = CFrame.new(0, 20, 0)
+    
+    hrp.CFrame = CFrame.new(0, 50, 0)
     return true
 end
 
@@ -590,6 +635,25 @@ CreateNewButton("TP Lobby", Color3.fromRGB(25, 15, 45), Pages.Misc, function()
         local hrp = myChar.HumanoidRootPart
         hrp.Velocity = Vector3.new(0, 0, 0)
         hrp.RotVelocity = Vector3.new(0, 0, 0)
+        
+        local lobby = workspace:FindFirstChild("Lobby")
+        if lobby then
+            local lobbyParts = {}
+            for _, part in pairs(lobby:GetDescendants()) do
+                if part:IsA("BasePart") and part.Size.Magnitude > 5 then
+                    table.insert(lobbyParts, part)
+                end
+            end
+            
+            if #lobbyParts > 0 then
+                table.sort(lobbyParts, function(a, b) 
+                    return a.Size.Magnitude > b.Size.Magnitude 
+                end)
+                hrp.CFrame = lobbyParts[1].CFrame * CFrame.new(0, 5, 0)
+                return
+            end
+        end
+        
         hrp.CFrame = CFrame.new(-108.5, 140, -11.5)
     end
 end)
@@ -668,27 +732,95 @@ task.spawn(function()
     end
 end)
 
+-- Исправленный NoSpread/NoRecoil
+local NoSpreadConnections = {}
+local function ToggleNoSpread(state)
+    if state then
+        -- Очищаем старые соединения
+        for _, conn in pairs(NoSpreadConnections) do
+            conn:Disconnect()
+        end
+        NoSpreadConnections = {}
+        
+        -- Подключаемся к изменению экипировки
+        local function setupTool(tool)
+            if tool and tool:IsA("Tool") then
+                -- Обнуляем отдачу через повторяющуюся проверку
+                local conn = RunService.Heartbeat:Connect(function()
+                    if tool.Parent and States.NoSpread then
+                        -- Пытаемся обнулить отдачу через разные методы
+                        pcall(function()
+                            local handle = tool:FindFirstChild("Handle")
+                            if handle and handle:FindFirstChild("Recoil") then
+                                handle.Recoil:Destroy()
+                            end
+                        end)
+                        pcall(function()
+                            if tool:FindFirstChild("Recoil") then
+                                tool.Recoil:Destroy()
+                            end
+                        end)
+                    end
+                end)
+                table.insert(NoSpreadConnections, conn)
+            end
+        end
+        
+        -- Проверяем текущий инструмент
+        if LP.Character then
+            local currentTool = LP.Character:FindFirstChildOfClass("Tool")
+            if currentTool then setupTool(currentTool) end
+        end
+        
+        -- Следим за новыми инструментами
+        if LP.Character then
+            local conn = LP.Character.ChildAdded:Connect(function(child)
+                if child:IsA("Tool") then
+                    setupTool(child)
+                end
+            end)
+            table.insert(NoSpreadConnections, conn)
+        end
+    else
+        -- Отключаем всё
+        for _, conn in pairs(NoSpreadConnections) do
+            conn:Disconnect()
+        end
+        NoSpreadConnections = {}
+    end
+end
+
 RunService.Heartbeat:Connect(function()
     local myChar = LP.Character if not myChar then return end
     if States.Aimbot and UIS:IsMouseButtonPressed(Enum.UserInputType.MouseButton2) then
         local target = GetClosestPlayer(false)
-        if target and target.Character and target.Character:FindFirstChild("Head") then workspace.CurrentCamera.CFrame = CFrame.new(workspace.CurrentCamera.CFrame.Position, target.Character.Head.Position) end
+        if target and target.Character and target.Character:FindFirstChild("Head") then 
+            workspace.CurrentCamera.CFrame = CFrame.new(workspace.CurrentCamera.CFrame.Position, target.Character.Head.Position) 
+        end
     elseif States.AimAssist then
         local target = GetClosestPlayer(true)
         if target and target.Character and target.Character:FindFirstChild("Head") then
-            local camCF = workspace.CurrentCamera.CFrame; workspace.CurrentCamera.CFrame = camCF:Lerp(CFrame.new(camCF.Position, target.Character.Head.Position), 0.15)
+            local camCF = workspace.CurrentCamera.CFrame
+            workspace.CurrentCamera.CFrame = camCF:Lerp(CFrame.new(camCF.Position, target.Character.Head.Position), 0.15)
         end
     end
     if myChar:FindFirstChild("Humanoid") and TargetSpeed ~= 16 and not States.BHop and not States.CoinFarm then
         myChar.Humanoid.WalkSpeed = TargetSpeed
-        if myChar:FindFirstChild("HumanoidRootPart") then myChar.HumanoidRootPart.AssemblyLinearVelocity = myChar.Humanoid.MoveDirection * TargetSpeed end
+        if myChar:FindFirstChild("HumanoidRootPart") then 
+            myChar.HumanoidRootPart.AssemblyLinearVelocity = myChar.Humanoid.MoveDirection * TargetSpeed 
+        end
     end
     if States.BHop and myChar:FindFirstChild("Humanoid") and myChar:FindFirstChild("HumanoidRootPart") then
         local hum = myChar.Humanoid; local hrp = myChar.HumanoidRootPart
         if UIS:IsKeyDown(Enum.KeyCode.Space) then
-            if hum.FloorMaterial ~= Enum.Material.Air then hum:ChangeState(Enum.HumanoidStateType.Jumping) BHopSpeed = math.clamp(BHopSpeed + 4, 16, 85) end
+            if hum.FloorMaterial ~= Enum.Material.Air then 
+                hum:ChangeState(Enum.HumanoidStateType.Jumping) 
+                BHopSpeed = math.clamp(BHopSpeed + 4, 16, 85) 
+            end
             hrp.AssemblyLinearVelocity = Vector3.new(hum.MoveDirection.X * BHopSpeed, hrp.AssemblyLinearVelocity.Y, hum.MoveDirection.Z * BHopSpeed)
-        else BHopSpeed = 16 end
+        else 
+            BHopSpeed = 16 
+        end
     end
 
     if States.Noclip or States.CoinFarm then
@@ -727,13 +859,6 @@ RunService.Heartbeat:Connect(function()
         hrp.Velocity = moveDir.Unit * (moveDir.Magnitude > 0 and FlySpeed or 0)
         if moveDir.Magnitude == 0 then hrp.Velocity = Vector3.new(0, 0.1, 0) end
     end
-    if States.NoSpread then
-        local tool = myChar:FindFirstChild("Tool") or myChar:FindFirstChildOfClass("Tool")
-        if tool and (tool:FindFirstChild("KnifeLocal") or tool:FindFirstChild("GunLocal")) then
-            local client = tool:FindFirstChildOfClass("LocalScript")
-            if client then local env = getsenv(client); if env and env.Spread then env.Spread = 0 end end
-        end
-    end
     if States.Wallbang then
         local bulletNames = {"Bullet", "Projectile", "PlayerProjectile", "Part", "Handle"}
         for _, obj in pairs(workspace:GetDescendants()) do
@@ -746,7 +871,13 @@ RunService.Heartbeat:Connect(function()
     if States.AntiFling then
         for _, p in pairs(Plrs:GetPlayers()) do
             if p ~= LP and p.Character then
-                for _, part in pairs(p.Character:GetChildren()) do if part:IsA("BasePart") then part.CanCollide = false part.Velocity = Vector3.new(0,0,0) part.RotVelocity = Vector3.new(0,0,0) end end
+                for _, part in pairs(p.Character:GetChildren()) do 
+                    if part:IsA("BasePart") then 
+                        part.CanCollide = false 
+                        part.Velocity = Vector3.new(0,0,0) 
+                        part.RotVelocity = Vector3.new(0,0,0) 
+                    end 
+                end
             end
         end
     end
@@ -761,9 +892,13 @@ function UpdateAllHitboxes()
                 local size = Vector3.new(Hitbox_Size, Hitbox_Size, Hitbox_Size)
                 hrp.Size = size
                 head.Size = size
-                local transparency = Hitbox_Size > 50 and 1 or 0.7
-                hrp.Transparency = transparency
-                head.Transparency = transparency
+                if Hitbox_Size > 50 then
+                    hrp.Transparency = 1
+                    head.Transparency = 1
+                else
+                    hrp.Transparency = 0.7
+                    head.Transparency = 0.7
+                end
                 hrp.Color = AccentColor
                 head.Color = AccentColor
                 hrp.CanCollide = false
@@ -786,9 +921,13 @@ task.spawn(function()
         if EspEnabled then
             for _, p in pairs(Plrs:GetPlayers()) do
                 if p ~= LP and p.Character then
-                    if p.Character:FindFirstChild("Knife") or p.Backpack:FindFirstChild("Knife") then CreateESP(p, Color3.fromRGB(255, 0, 0), "Murderer 🔪")
-                    elseif p.Character:FindFirstChild("Gun") or p.Backpack:FindFirstChild("Gun") then CreateESP(p, Color3.fromRGB(0, 0, 255), "Sheriff ︻╦╤─")
-                    else CreateESP(p, Color3.fromRGB(0, 255, 0), "Innocent 👤") end
+                    if p.Character:FindFirstChild("Knife") or p.Backpack:FindFirstChild("Knife") then 
+                        CreateESP(p, Color3.fromRGB(255, 0, 0), "Murderer 🔪")
+                    elseif p.Character:FindFirstChild("Gun") or p.Backpack:FindFirstChild("Gun") then 
+                        CreateESP(p, Color3.fromRGB(0, 0, 255), "Sheriff ︻╦╤─")
+                    else 
+                        CreateESP(p, Color3.fromRGB(0, 255, 0), "Innocent 👤") 
+                    end
                 end
             end
         end
@@ -814,7 +953,6 @@ workspace.DescendantAdded:Connect(function(desc)
 end)
 
 -- ========== НАСТРОЙКИ (Settings) ==========
--- Цвет акцента
 local rAcc, gAcc, bAcc = 200, 0, 255
 CreateNewSlider("Accent Red", 0, 255, 200, Pages.Settings, function(val) rAcc = val end)
 CreateNewSlider("Accent Green", 0, 255, 0, Pages.Settings, function(val) gAcc = val end)
@@ -823,7 +961,6 @@ CreateNewButton("Apply Accent Color", Color3.fromRGB(80, 30, 120), Pages.Setting
     UpdateAccentColor(Color3.fromRGB(rAcc, gAcc, bAcc))
 end)
 
--- Фон меню
 local rMenu, gMenu, bMenu = 11, 7, 19
 local rSide, gSide, bSide = 14, 9, 26
 CreateNewSlider("Menu BG Red", 0, 255, 11, Pages.Settings, function(val) rMenu = val end)
@@ -833,7 +970,6 @@ CreateNewButton("Apply Menu BG", Color3.fromRGB(60, 20, 80), Pages.Settings, fun
     UpdateMenuBGColor(Color3.fromRGB(rMenu, gMenu, bMenu), Color3.fromRGB(rSide, gSide, bSide))
 end)
 
--- Фон кнопок
 local rBtn, gBtn, bBtn = 20, 13, 35
 CreateNewSlider("Button BG Red", 0, 255, 20, Pages.Settings, function(val) rBtn = val end)
 CreateNewSlider("Button BG Green", 0, 255, 13, Pages.Settings, function(val) gBtn = val end)
@@ -842,7 +978,6 @@ CreateNewButton("Apply Button BG", Color3.fromRGB(70, 25, 100), Pages.Settings, 
     UpdateButtonBGColor(Color3.fromRGB(rBtn, gBtn, bBtn))
 end)
 
--- Клавиша меню
 local KeybindFrame = Instance.new("Frame")
 KeybindFrame.Size = UDim2.new(1, -10, 0, 46)
 KeybindFrame.BackgroundColor3 = ButtonBGColor
@@ -893,7 +1028,6 @@ end)
 local function ToggleFunction(stateKey)
     local control = ToggleControls[stateKey]
     if not control then
-        -- Fallback для функций без GUI
         if stateKey == "ESP" then
             EspEnabled = not EspEnabled
             if not EspEnabled then ClearESP() end
@@ -953,4 +1087,4 @@ UIS.InputBegan:Connect(function(input, gpe)
             end
         end
     end
-end)
+end
